@@ -1,0 +1,493 @@
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// to get current directory
+$curdir=basename(__DIR__);
+
+if(empty($_REQUEST['propertyid'])) {
+	header("Location:index.php");
+	exit();
+} 
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+include '..\users\user.php';
+$user = new User();
+
+$conditions='';
+$conditions['where'] = array(
+    'prop_id' => $_REQUEST['propertyid']
+);
+$conditions['return_type'] = 'single';
+$property_details = $user->getRows('property_listings', $conditions);
+
+if(empty($property_details)) {
+	header("Location:index.php");
+	exit();
+} 
+
+$conditions='';
+$conditions['where'] = array(
+    'id' => $property_details['prop_status']
+);
+$conditions['return_type'] = 'single';
+$property_status = $user->getRows('property_status', $conditions);
+
+$conditions='';
+$conditions['where'] = array(
+    'id' => $property_details['type_id']
+);
+$conditions['return_type'] = 'single';
+$property_type = $user->getRows('property_types', $conditions);
+
+$conditions='';
+$conditions['where'] = array(
+    'id' => $property_details['rooms']
+);
+$conditions['return_type'] = 'single';
+$property_rooms = $user->getRows('property_rooms', $conditions);
+
+$conditions='';
+$conditions['where'] = array(
+    'id' => $property_details['bedrooms']
+);
+$conditions['return_type'] = 'single';
+$property_bedrooms = $user->getRows('property_rooms', $conditions);
+
+$conditions='';
+$conditions['where'] = array(
+    'id' => $property_details['bathrooms']
+);
+$conditions['return_type'] = 'single';
+$property_bathrooms = $user->getRows('property_rooms', $conditions);
+
+
+$conditions='';
+$conditions['where'] = array(
+    'id' => $property_details['build_age']
+);
+$conditions['return_type'] = 'single';
+$property_age = $user->getRows('property_age', $conditions);
+
+
+
+?>
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Properties in Chennai</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../assets/css/font-awesome.min.css">
+    <!-- Bootstrap core CSS -->
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="../assets/css/mdb.min.css" rel="stylesheet">
+    <!-- BX Slider Bootstrap -->
+    <link href="../assets/css/jquery.bxslider.min.css" rel="stylesheet">
+    <!-- CS Select Bootstrap -->
+    <link href="../assets/css/cs-select.css" rel="stylesheet">
+    <link href="../assets/css/cs-skin-border.css" rel="stylesheet">
+    <!-- Your custom styles (optional) -->
+    <link href="../assets/css/style.css" rel="stylesheet">
+
+    <style type="text/css">
+    	
+        .widget-wrapper {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 2rem;
+        }
+        .card {
+            font-weight: 300;
+        }
+
+
+    </style>
+
+
+</head>
+<body>
+
+<!-- Wrapper -->
+<div id="wrapper">
+
+
+<!-- Header Container
+================================================== -->
+<?php
+
+include '../header/menu.php';
+
+?>
+<!-- Header Container / End -->
+
+<div class="container">
+	<div class="row">
+                <!--Sidebar-->
+                <div class="col-lg-4 mt-5">
+
+                    <div class="widget-wrapper wow fadeIn"  data-wow-delay="0.1s">
+                        <h4>Search Properties: </h4>
+                        <br>
+                        <form method="POST" action="index.php" name="searchfrm">
+
+                        <div class="card">
+                            <div class="card-body">
+							<!-- Row -->
+							<div class="row md-form">
+								<!-- Status -->
+								<div class="col-md-12">
+									<select class="cs-select cs-skin-border" name="property_status">
+										<option value="" selected>Any Status</option>		
+									<?php  
+										$property_status1 = $user->getRows("property_status");
+				                        if(!empty($property_status1)): $count = 0; foreach($property_status1 as $propertystatus): $count++;
+				                  ?>
+					                  <option value="<?php echo $propertystatus['id']; ?>"><?php echo $propertystatus['status']; ?></option>
+				 	                  <?php endforeach; else: 
+				 	                  endif; 
+				 	                  ?>
+									</select>
+								</div>
+							</div>
+							<!-- Row / End -->
+
+
+							<!-- Row -->
+							<div class="row md-form">
+								<!-- Type -->
+								<div class="col-md-12">
+									<select class="cs-select cs-skin-border" name="property_type">
+										<option value="" selected>Any Type</option>		
+									<?php  
+										$property_types = $user->getRows("property_types");
+				                        if(!empty($property_types)): $count = 0; foreach($property_types as $property_type): $count++;
+				                  ?>
+					                  <option value="<?php echo $property_type['id']; ?>"><?php echo $property_type['title']; ?></option>
+				 	                  <?php endforeach; else: 
+				 	                  endif; 
+				 	                  ?>
+									</select>
+								</div>
+							</div>
+							<!-- Row / End -->
+
+							<!-- Row -->
+							<div class="row md-form">
+
+								<!-- Min Area -->
+								<div class="col-md-6">
+									<select class="cs-select cs-skin-border" name="bedrooms">
+										<option value="" selected>Bedrooms (Any)</span></option>		
+									<?php  
+										$property_rooms1 = $user->getRows("property_rooms");
+				                        if(!empty($property_rooms1)): $count = 0; foreach($property_rooms1 as $property_room): $count++;
+				                  ?>
+					                  <option value="<?php echo $property_room['id']; ?>"><?php echo $property_room['rooms']; ?></option>
+				 	                  <?php endforeach; else: 
+				 	                  endif; 
+				 	                  ?>
+									</select>
+								</div>
+
+								<!-- Max Area -->
+								<div class="col-md-6">
+									<select class="cs-select cs-skin-border" name="bedrooms">
+										<option value="" selected>Bathrooms (Any)</span></option>		
+									<?php  
+										$property_rooms1 = $user->getRows("property_rooms");
+				                        if(!empty($property_rooms1)): $count = 0; foreach($property_rooms1 as $property_room): $count++;
+				                  ?>
+					                  <option value="<?php echo $property_room['id']; ?>"><?php echo $property_room['rooms']; ?></option>
+				 	                  <?php endforeach; else: 
+				 	                  endif; 
+				 	                  ?>
+									</select>
+								</div>
+
+							</div>
+							<!-- Row / End -->
+
+							<label>Area Range (in Sqft.)</label>
+							<div class="row md-form">
+								<!-- Area Range -->
+								<div class="col-md-6">
+							            <div class="md-form">
+							                <input type="text" id="area_min" name="area_min" value="" class="form-control">
+							                <label for="area_min" class="">Min Sqft.</label>
+							            </div>
+								</div>
+
+								<div class="col-md-6">
+							            <div class="md-form">
+							                <input type="text" id="area_max" name="area_max" value="" class="form-control">
+							                <label for="area_max" class="">Max Sqft.</label>
+							            </div>
+								</div>
+
+							</div>
+
+							<label>Price Range (in INR)</label>
+							<div class="row md-form">
+								<!-- Area Range -->
+								<div class="col-md-6">
+							            <div class="md-form">
+							                <input type="text" id="price_min" name="price_min" value="" class="form-control">
+							                <label for="price_min" class="">Min INR.</label>
+							            </div>
+								</div>
+
+								<div class="col-md-6">
+							            <div class="md-form">
+							                <input type="text" id="price_max" name="price_max" value="" class="form-control">
+							                <label for="price_max" class="">Max INR.</label>
+							            </div>
+								</div>
+
+							</div>
+
+							<div class="row md-form">
+								<div class="col-md-12">
+									<button type="submit"  name="search" id="search" class="btn btn-unique">Search</button>
+									<button  type="button" name="reset" id="reset" class="btn btn-info" onclick="window.location.assign('index.php');">List All</button>
+								</div>
+							</div>
+							</div>
+						</div>
+						</form>
+                    </div>
+
+                    <div class="widget-wrapper wow fadeIn" data-wow-delay="0.2s">
+                        <h4>My Contact:</h4>
+                        <br>
+                        <div class="card">
+                            <div class="card-body">
+                                <p><u>My Contact Details</u></p>
+                                <p>Please reference the property Id if related to listed properties.</p>
+                                <p>Phone: 1233455</p>
+                                <p>Email: ran@r.com</p>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!--/.Sidebar-->
+
+		<div class="col-md-8">
+			  <div class="row mt-5">
+			  	<div class="col-md-10">
+		        <h2 class="h2-responsive wow fadeIn text-left"><?php echo $property_details['title']; ?></h2>
+		    	</div><div class="col-md-2">
+		        <h3 class="price text-right"><span class="badge red darken-2"><?php echo $property_status['status']; ?></span></h3>
+		    	</div>
+		      </div>
+		        <hr>
+                        
+  				<div class="view overlay hm-white-light z-depth-1-half mb-3">
+					<?php
+					    $targetDir = "../assets/images/properties/large/". $_REQUEST['propertyid'] . "/";
+					    if(file_exists($targetDir)) {
+						    $files = scandir($targetDir);                 //1
+						    if ( false!==$files ) {
+					  ?>
+					<ul class="bxslider">
+					<?php
+						        foreach ( $files as $file ) {
+						            if ( '.'!=$file && '..'!=$file) {       //2
+						            	echo "<li><img src='" . $targetDir . $file . "' class='img-fluid' alt='" . $file . "' /></li>";
+						            }
+						        }
+					?>
+					</ul>
+					<?php
+						    } else {
+							        echo "<img src='../assets/images/properties/large/noimage.jpg' class='img-fluid' alt='No Property Image' /> ";						    	
+						    }
+						 } else {
+							        echo "<img src='../assets/images/properties/large/noimage.jpg' class='img-fluid' alt='No Property Image' /> ";
+						 }
+					?>
+
+				</div>
+              <div id="bx-pager" class="text-center">
+					<?php
+					    $targetDir = "../assets/images/properties/large/". $_REQUEST['propertyid'] . "/";
+					    if(file_exists($targetDir)) {
+						    $files = scandir($targetDir);  
+						    $cnt=0;               //1
+						    if ( false!==$files ) {
+						        foreach ( $files as $file ) {
+						            if ( '.'!=$file && '..'!=$file) {       //2
+						            	echo "<a data-slide-index='$cnt' class='mr-1' href=''><img src='" . $targetDir . $file . "' alt='Background' style='width:100px;height:50px;' /></a>";
+						            	$cnt++;
+						            }
+						        }
+						    }
+						}
+					?>
+			 </div>              
+			<hr>
+			<div class="property-details">
+				<!-- Nav tabs -->
+				<ul class="nav nav-tabs nav-justified indigo" role="tablist">
+				    <li class="nav-item">
+				        <a class="nav-link active" data-toggle="tab" href="#panel5" role="tab"><i class="fa fa-building mr-1"></i> Details</a>
+				    </li>
+				    <li class="nav-item">
+				        <a class="nav-link" data-toggle="tab" href="#panel6" role="tab"><i class="fa fa-building mr-1"></i> Description</a>
+				    </li>
+				    <li class="nav-item">
+				        <a class="nav-link" data-toggle="tab" href="#panel7" role="tab"><i class="fa fa-building mr-1"></i> Features</a>
+				    </li>
+				</ul>
+				<!-- Tab panels -->
+				<div class="tab-content">
+				    <!--Panel 1-->
+				    <div class="tab-pane fade in show active" id="panel5" role="tabpanel">
+				    	<br>
+				    	<div class="row ml-2">
+				    	<div class="col-md-6">
+				    		Prop ID: <span><?php echo $property_details['prop_id']; ?></span><br>
+				    		Prop Type: <span><?php echo $property_type['title']; ?></span><br>
+				    		Area: <span><?php echo $property_details['floor_area']; ?> sq ft</span><br>
+				    		Price: INR. <span><?php echo $property_details['price']; ?></span>
+				    	</div>
+
+				    	<div class="col-md-6">
+				    		Building Age: <span><?php echo ($property_details['build_age']!=0)?$property_age['age_list']:'N/A'; ?></span><br>
+				    		Rooms: <span><?php echo $property_rooms['rooms']; ?></span><br>
+				    		Bedroom: <span><?php echo ($property_details['bedrooms']!=0)?$property_bedrooms['rooms']:'N/A'; ?></span><br>
+				    		Bathroom: <span><?php echo ($property_details['bathrooms']!=0)?$property_bathrooms['rooms']:'N/A'; ?>
+				    	</div>
+				    	</div>
+				    	<hr>
+				    	<div class="row mt-3 ml-4">
+				    		<p>Address: <?php echo $property_details['address'].', '. $property_details['address_city']; ?></p>
+				    	</div>
+				    	<hr>
+				    </div>
+				    <!--/.Panel 1-->
+				    <!--Panel 2-->
+				    <div class="tab-pane fade" id="panel6" role="tabpanel">
+				        <br>
+						<p>
+							<?php echo $property_details['description']; ?>
+						</p>
+						<hr>
+				    </div>
+				    <!--/.Panel 2-->
+				    <!--Panel 3-->
+				    <div class="tab-pane fade" id="panel7" role="tabpanel">
+				        <br>
+						<?php
+
+						                $conditions = "";
+						                $conditions['where'] = array(
+						                    'property_id' => $property_details['id']
+						                );
+						                $property_features = $user->getRows('property_features', $conditions);
+
+							            if($property_features) {
+						?>
+
+										<div class="row">
+										<br>
+
+						<?php
+
+						                foreach($property_features as $feature) {
+						                	$conditions='';
+							                $conditions['where'] = array(
+							                    'id' => $feature['feature_id']
+							                );
+							                $conditions['return_type'] = 'single';
+						                	$feature_name = $user->getRows('property_features_list', $conditions);
+											echo "<div class='col-md-3'><i class='fa fa-check-square fa-lg mr-1 teal-text'> </i>" . $feature_name['title'] . "</div>" ;
+										}
+									}
+						?>
+										</div>
+						<hr>
+				    </div>
+				    <!--/.Panel 3-->
+				</div>
+            </div>            
+ 			<a href="index.php" class="btn btn-unique">Back to Listings</a>
+                  
+		</div>
+	</div>
+</div>
+		<br><br>
+                
+
+
+<!-- Footer
+================================================== -->
+<!-- Footer
+================================================== -->
+<?php
+include '../footer/footer.php';
+?>
+<!-- Footer / End -->
+
+
+<!-- Back To Top Button -->
+<div id="backtotop"><a href="#"></a></div>
+
+
+<!-- Scripts
+================================================== -->
+
+    <!-- JQuery -->
+    <script type="text/javascript" src="../assets/js/jquery-3.2.1.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="../assets/js/popper.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="../assets/js/bootstrap.min.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="../assets/js/mdb.min.js"></script>
+
+    <!-- BX Slider JavaScript -->
+    <script type="text/javascript" src="../assets/js/jquery.bxslider.min.js"></script>
+    <!-- CS Select JavaScript -->
+    <script type="text/javascript" src="../assets/js/classie.js"></script>
+    <script type="text/javascript" src="../assets/js/selectFx.js"></script>
+
+    <!-- Animations init-->
+    <script>
+    new WOW().init();
+    </script>
+		<script>
+			(function() {
+				[].slice.call( document.querySelectorAll( 'select.cs-select' ) ).forEach( function(el) {	
+					new SelectFx(el);
+				} );
+			})();
+		</script>
+    <script type="text/javascript">
+    	$(document).ready(function(){
+			  $('.bxslider').bxSlider({
+			  	     controls: false,
+                    responsive: true,
+                    pagerCustom: '#bx-pager'
+
+			  });
+		});
+    </script>
+
+</div>
+<!-- Wrapper / End -->
+
+
+</body>
+</html>
+
+

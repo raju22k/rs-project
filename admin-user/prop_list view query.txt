@@ -1,0 +1,27 @@
+select `listing`.`id` AS `id`,
+		`user`.`full_name` AS `user_name`,
+		`listing`.`prop_id` AS `property_id`,
+		`listing`.`title` AS `title`,
+		`pstatus`.`status` AS `property_status`,
+		`ptypes`.`title` AS `property_type`,
+		`listing`.`type_id` AS `type_id`,
+		`listing`.`price` AS `price`,
+		`listing`.`floor_area` AS `area`,
+		`prooms`.`rooms` AS `rooms`,
+		`listing`.`address` AS `address`,
+		`listing`.`landmark` AS `landmark`,
+		`plocality`.`locality` AS `place`,
+		`listing`.`description` AS `description`,
+		`buildingage`.`age_list` AS `bld_age`,
+		`brooms`.`rooms` AS `bed_rooms`,
+		`furn`.`name` AS `furnished`,
+		`listing`.`modified` AS `date_modified` 
+from `realestate`.`property_listings` `listing` 
+join `realestate`.`users` `user` on `listing`.`user_id` = `user`.`id` 
+join `realestate`.`property_status` `pstatus` on `listing`.`prop_status` = `pstatus`.`id` 
+join `realestate`.`property_types` `ptypes` on `listing`.`type_id` = `ptypes`.`id` 
+join `realestate`.`property_rooms` `prooms` on `listing`.`rooms` = `prooms`.`id` 
+join `realestate`.`property_locality` `plocality` on `listing`.`locality` = `plocality`.`id` 
+join `realestate`.`property_age` `buildingage` on `listing`.`build_age` = `buildingage`.`id` 
+join `realestate`.`property_rooms` `brooms` on `listing`.`bedrooms` = `brooms`.`id` 
+join `realestate`.`property_furn` `furn` on `listing`.`furnished` = `furn`.`id`

@@ -1,0 +1,4 @@
+[11-Apr-2018 06:37:16 Etc/GMT] PHP Warning:  mysqli::__construct(): (42000/1044): Access denied for user 'solorixc_visitor'@'localhost' to database 'solorix_properties' in /home/solorixc/public_html/rs/users/user.php on line 19
+[11-Apr-2018 06:39:05 Etc/GMT] PHP Warning:  mysqli::__construct(): (42000/1044): Access denied for user 'solorixc_visitor'@'localhost' to database 'solorix_properties' in /home/solorixc/public_html/rs/users/user.php on line 19
+[11-Apr-2018 06:39:33 Etc/GMT] PHP Warning:  mysqli::__construct(): (42000/1044): Access denied for user 'solorixc_agent'@'localhost' to database 'solorix_properties' in /home/solorixc/public_html/rs/users/user.php on line 19
+[11-Apr-2018 06:43:21 Etc/GMT] PHP Warning:  mysqli::__construct(): (42000/1044): Access denied for user 'solorixc_agent'@'localhost' to database 'solorix_properties' in /home/solorixc/public_html/rs/users/user.php on line 19
